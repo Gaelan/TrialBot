@@ -75,6 +75,7 @@ GEM
     ntlm-http (0.1.1)
     opus-ruby (1.0.1)
       ffi
+    pg (0.19.0)
     pkg-config (1.1.7)
     rack (2.0.1)
     rack-test (0.6.3)
@@ -124,6 +125,7 @@ DEPENDENCIES
   discordrb!
   mechanize
   nokogiri
+  pg
   rake
   sqlite3
   standalone_migrations
