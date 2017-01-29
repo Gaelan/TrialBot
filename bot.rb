@@ -135,18 +135,23 @@ bot.command :logout do |message|
   message.respond ':door: Logged out!'
 end
 
-bot.command :reports do |message|
+bot.command :reports do |message, mode = nil|
+  if mode == 'public'
+    pm_or_send = proc { |*x| message.respond *x }
+  else
+    pm_or_send = proc { |*x| message.author.pm *x }
+  end
   authenticate(message) do |user|
     reports = api_call action: 'getreports', user: user.tos_name
-    message.respond ':arrow_right: Report information sent via PM.'
+    message.respond ':arrow_right: Report information sent via PM.' unless mode == 'public'
     if reports['ErrorMessage'] && reports['ErrorMessage'] =~ /no guilty reports/
-      message.author.pm ":star2: #{reports['ErrorMessage']}"
+      pm_or_send[":star2: #{reports['ErrorMessage']}"]
     elsif reports['ErrorMessage'] != ''
-      message.author.pm ":x: #{reports['ErrorMessage']}"
+      pm_or_send[":x: #{reports['ErrorMessage']}"]
     else
-      message.author.pm ":frowning: You have #{reports['ReportID'].length} guilty reports:"
+      pm_or_send[":frowning: You have #{reports['ReportID'].length} guilty reports:"]
       reports['ReportID'].each do |id|
-        message.author.pm Report.new(id).description
+        pm_or_send[Report.new(id).description]
       end
     end
     return
