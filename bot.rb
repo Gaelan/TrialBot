@@ -61,6 +61,18 @@ class Report
     doc.at_css('.' + field_class.to_s).text
   end
 
+  def status
+    if doc.at_css('#splash.guilty')
+      :guilty
+    elsif doc.at_css('#splash.neutral')
+      :no_judgement
+    elsif doc.at_css('#splash.innocent')
+      :innocent
+    else
+      :pending
+    end
+  end
+
   def embed
     Webhooks::Embed.new(
       title: "Report \##{field(:reportId)}",
@@ -68,9 +80,16 @@ class Report
       fields: [
         Webhooks::EmbedField.new(name: 'Reported Player', value: field(:reportedPlayer), inline: true),
         Webhooks::EmbedField.new(name: 'Reported Reason', value: field(:reportReason), inline: true),
+        Webhooks::EmbedField.new(name: 'Status', value: status.to_s.humanize, inline: true)
         #Webhooks::EmbedField.new(name: 'Details', value: )
       ],
-      description: field(:reportDescription)
+      description: field(:reportDescription),
+      color: {
+        guilty: 0xFF0000,
+        no_judgement: 0x0000FF,
+        innocent: 0x00FF00,
+        pending: 0x555555
+      }[status]
     )
   end
 end
