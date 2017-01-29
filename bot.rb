@@ -4,12 +4,11 @@ require 'discordrb'
 require 'yaml'
 require 'active_support/all'
 require 'active_record'
-require 'pry'
 require 'digest/sha1'
 require 'mechanize'
 require 'json'
 
-ActiveRecord::Base.configurations = YAML.load(File.open('db/config.yml'))
+ActiveRecord::Base.configurations = YAML.load(File.open('config/database.yml'))
 ActiveRecord::Base.establish_connection
 
 class User < ActiveRecord::Base
@@ -17,7 +16,7 @@ class User < ActiveRecord::Base
   validates :tos_name, presence: true, uniqueness: true
 
   def try_verify(key)
-    correct_key = Digest::SHA1.hexdigest 'b956d835a1' + tos_name
+    correct_key = Digest::SHA1.hexdigest ENV['TOS_BOT_AUTH_SALT'] + tos_name
     if key == correct_key
       update(verified: true)
       return true
@@ -28,15 +27,13 @@ class User < ActiveRecord::Base
 end
 
 class Report
+  include Discordrb
   attr_accessor :id
   def initialize(id)
     @id = id
   end
 
   def description
-    url = "http://www.blankmediagames.com/Trial/viewReport.php?id=#{id}"
-    doc = Nokogiri::HTML(open(url))
-
     data = {
       'Report ID' => :reportId,
       'Reported Player' => :reportedPlayer,
@@ -45,11 +42,36 @@ class Report
     }
 
     data_text = data.map do |key, raw_value|
-      value = doc.at_css('.' + raw_value.to_s).text
+      value = field(raw_value)
       "**#{key}:** #{value}"
     end.join("\n")
 
     data_text + "\n" + url
+  end
+
+  def url
+    "http://www.blankmediagames.com/Trial/viewReport.php?id=#{id}"
+  end
+
+  def doc
+    @doc ||= Nokogiri::HTML(open(url))
+  end
+
+  def field(field_class)
+    doc.at_css('.' + field_class.to_s).text
+  end
+
+  def embed
+    Webhooks::Embed.new(
+      title: "Report \##{field(:reportId)}",
+      url: url,
+      fields: [
+        Webhooks::EmbedField.new(name: 'Reported Player', value: field(:reportedPlayer), inline: true),
+        Webhooks::EmbedField.new(name: 'Reported Reason', value: field(:reportReason), inline: true),
+        #Webhooks::EmbedField.new(name: 'Details', value: )
+      ],
+      description: field(:reportDescription)
+    )
   end
 end
 
@@ -59,7 +81,7 @@ class Discordrb::User
   end
 end
 
-bot = Discordrb::Commands::CommandBot.new YAML.load(File.open('discord_config.yaml')).with_indifferent_access
+bot = Discordrb::Commands::CommandBot.new token: ENV['TRIAL_BOT_DISCORD_TOKEN'], application_id: ENV['TRIAL_BOT_DISCORD_APPID'], prefix: '!'
 
 def authenticate(message)
   user = message.author.db_user
@@ -86,6 +108,10 @@ def api_call(options)
 end
 
 bot.command :logout do |message|
+  unless message.author.db_user
+    message.respond ":confused: You're not even logged in!"
+    return
+  end
   message.author.db_user.destroy!
   message.respond ':door: Logged out!'
 end
@@ -134,6 +160,10 @@ end
 
 bot.command :verify do |message, key|
   user = message.author.db_user
+  unless user
+    message.respond ":confused: Type !ign <your name> first."
+    return
+  end
   succeeded = user.try_verify(key)
   if succeeded
     message.respond ":white_check_mark: You've been verified as **#{user.tos_name}**!"
@@ -143,9 +173,10 @@ bot.command :verify do |message, key|
 end
 
 bot.message(contains: /\A\d+\z/) do |message|
+  message.channel.start_typing
   id = message.content.to_i
 
-  message.respond Report.new(id).description
+  message.channel.send_message '', false, Report.new(id).embed
 end
 
 bot.run
