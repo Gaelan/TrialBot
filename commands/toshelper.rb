@@ -33,7 +33,8 @@ def parse_role name
 		'vh' => :vampire_hunter,
 		'vamp' => :vampire,
 		'jest' => :jester,
-		'jailer' => :jailor
+		'jailer' => :jailor,
+		'jail' => :jailor
 	}
 
 	names.merge!(Hash[ROLES.map {|name| [name.to_s, name]}])
