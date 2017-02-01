@@ -37,7 +37,7 @@ def parse_role name
 
 	names.merge!(Hash[ROLES.map {|name| [name.to_s, name]}])
 
-	return names[name]
+	return names[name.downcase]
 end
 
 GROUPS = [
