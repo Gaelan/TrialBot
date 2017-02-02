@@ -43,6 +43,7 @@ Bot.command :info do |event|
 end
 
 Bot.command :top10 do |event|
+	event.channel.start_typing
 	response = api_call action: 'top10'
 
 	emojis = %w(first_place second_place third_place four five six seven eight nine keycap_ten)
