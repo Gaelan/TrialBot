@@ -29,9 +29,10 @@ Bot.command :tr do |event|
 	event.channel.start_typing
 	authenticate event do |user|
 		board = leaderboards
-		rank = board.find_index { |name, _| name == user.tos_name } + 1
+		rank = board.find_index { |name, _| name == user.tos_name }&.+ 1
 		unless rank
-			event.respond ":stuck_out_tongue: You're not even on the leaderboard."
+			tr = api_call(action: :trialrating, user: 'bluewave41')['trialrating']
+			event.respond "**#{user.tos_name}** has a Trial rating of **#{tr}**, but they aren't on the leaderboard."
 			return
 		end
 		event.respond "**#{user.tos_name}** is in **#{rank.ordinalize}** place with a Trial Rank of **#{board[user.tos_name]}**"
