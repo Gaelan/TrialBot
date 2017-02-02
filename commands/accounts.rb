@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
   validates :tos_name, presence: true, uniqueness: true
 
   def try_verify(key)
-    correct_key = Digest::SHA1.hexdigest ENV['TOS_Bot_AUTH_SALT'] + tos_name
+    correct_key = Digest::SHA1.hexdigest ENV['TOS_BOT_AUTH_SALT'] + tos_name
     if key == correct_key
       update(verified: true)
       return true
@@ -32,6 +32,16 @@ def authenticate(message)
   end
 end
 
+Bot.command :ign do |message, ign|
+  user = User.new(discord_id: message.author.id, tos_name: ign)
+  if !user.valid?
+    message.respond ":x: #{user.errors.full_messages.join ', '}"
+    return
+  end
+  user.save
+  ":pencil: Copy the command from http://blankmediagames.com/Trial/api/discord.php to link your Discord account to **#{ign}**."
+end
+
 Bot.command :logout do |message|
   unless message.author.db_user
     message.respond ":confused: You're not even logged in!"
@@ -39,4 +49,18 @@ Bot.command :logout do |message|
   end
   message.author.db_user.destroy!
   message.respond ':door: Logged out!'
+end
+
+Bot.command :verify do |message, key|
+  user = message.author.db_user
+  unless user
+    message.respond ":confused: Type !ign <your name> first."
+    return
+  end
+  succeeded = user.try_verify(key)
+  if succeeded
+    message.respond ":white_check_mark: You've been verified as **#{user.tos_name}**!"
+  else
+    message.respond ":x: Invalid key."
+  end
 end
