@@ -31,7 +31,7 @@ Bot.command :tr do |event|
 		board = leaderboards
 		rank = board.find_index { |name, _| name == user.tos_name }&.+ 1
 		unless rank
-			tr = api_call(action: :trialrating, user: 'bluewave41')['trialrating']
+			tr = api_call(action: :trialrating, user: user.tos_name)['trialrating']
 			event.respond "**#{user.tos_name}** has a Trial rating of **#{tr}**, but they aren't on the leaderboard."
 			return
 		end
