@@ -29,7 +29,7 @@ Bot.command :tr do |event|
 	event.channel.start_typing
 	authenticate event do |user|
 		board = leaderboards
-		rank = board.find_index { |name, _| name == user.tos_name }
+		rank = board.find_index { |name, _| name == user.tos_name } + 1
 		unless rank
 			event.respond ":stuck_out_tongue: You're not even on the leaderboard."
 			return
