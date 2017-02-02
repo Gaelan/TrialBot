@@ -1,6 +1,8 @@
 # A sample Gemfile
 source "https://rubygems.org"
 
+ruby '2.3.3'
+
 # gem "rails"
 gem 'nokogiri'
 gem 'discordrb', github: 'meew0/discordrb'
