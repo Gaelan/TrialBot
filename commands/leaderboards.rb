@@ -11,8 +11,9 @@ def leaderboards
 	Hash[pairs]
 end
 
-Bot.command :toptr do |event, count = 10|
+Bot.command :toptr do |event, count_in = 10|
 	event.channel.start_typing
+	count = count_in.to_i
 	if count > 25
 		event.respond ":x: Only up to 25 entries can be shown."
 		return
