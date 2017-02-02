@@ -10,6 +10,8 @@ gem 'activesupport'
 gem 'activerecord'
 group :development do
 	gem 'sqlite3'
+	gem 'pry'
+	gem 'pry-byebug'
 end
 group :production do
 	gem 'pg'
