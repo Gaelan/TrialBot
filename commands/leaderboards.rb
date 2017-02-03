@@ -61,7 +61,7 @@ def discordify(tos_name)
 end
 
 Thread.new do
-	old = {"AllDaysPass"=>"2217", "Kilza"=>"1438", "jaydeamali"=>"1364", "Beyrone"=>"1088", "LiamNoOni"=>"973", "oliebollen"=>"807", "Annmunition"=>"756", "lp0onfire"=>"646", "tacticianjack"=>"617", "angeemanangee"=>"586", "wesamosi"=>"552", "Ralozey"=>"489", "Virushexe"=>"479", "wtfyote"=>"410", "WittyRecluse"=>"364", "Aurumess"=>"345", "Shakira123"=>"337", "ElBrutus"=>"314", "DoodleFungus"=>"313", "Talon1165"=>"307", "Hellpest"=>"284", "Decent60"=>"283", "DragonSaviour"=>"270", "tescao"=>"264", "Nekojin"=>"259"}
+	old = leaderboards
 	loop do
 		new = leaderboards
 		puts "Running tr update. Old and new:"
