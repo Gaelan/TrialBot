@@ -24,7 +24,7 @@ Bot.command :toptr do |event, count_in = 10|
 		"#{index + 1}. **#{name}**: #{tr}"
 	end.join("\n")
 
-	event.channel.send_message '', false, Discordrb::Webhooks::Embed.new(title: "Top #{count} Jurors", description: text)
+	event.channel.send_message '', false, create_embed(title: "Top #{count} Jurors", description: text)
 end
 
 Bot.command :tr do |event|

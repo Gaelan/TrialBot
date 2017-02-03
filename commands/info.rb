@@ -33,7 +33,7 @@ Bot.command :info do |event|
 	event.channel.start_typing
 	authenticate(event) do |user|
 		response = api_call action: 'info', user: user.tos_name
-		embed = Discordrb::Webhooks::Embed.new title: user.tos_name
+		embed = create_embed title: user.tos_name
 		INFO_FIELDS.each do |name, field|
 			next if field[:hide]
 			embed.add_field name: field[:name], value: format(response[name.to_s], field[:format]), inline: true
@@ -51,6 +51,7 @@ Bot.command :top10 do |event|
 	strings = response['userlist'].map.each_with_index do |name, idx|
 		"#{idx + 1}. **#{name}**, with **#{response['elolist'][idx]}** elo"
 	end
-	event.channel.send_message '', false, Discordrb::Webhooks::Embed.new(title: 'Top 10 Elo', description: strings.join("\n\n"))
+	event.channel.send_message '', false, create_
+	embed(title: 'Top 10 Elo', description: strings.join("\n\n"))
 	nil
 end

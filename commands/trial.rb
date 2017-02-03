@@ -48,7 +48,7 @@ class Report
   end
 
   def embed
-    Webhooks::Embed.new(
+    create_embed(
       title: "Report \##{field(:reportId)}",
       url: url,
       fields: [

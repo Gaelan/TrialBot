@@ -13,6 +13,24 @@ ActiveRecord::Base.establish_connection
 
 Bot = Discordrb::Commands::CommandBot.new token: ENV['TRIAL_BOT_DISCORD_TOKEN'], application_id: ENV['TRIAL_BOT_DISCORD_APPID'], prefix: '!'
 
+FOOTERS = [
+  "As a completely unbiased bot, I believe DoodleFungus would make an excellent judge.",
+  "Reason: Gamethrowing. Details: None given.",
+  "Reason: Gamethrowing. Details: throwing the game",
+  "Dave has died. Dave was the Jailor. Dave has left the game.",
+  "Beep boop.",
+  "Don't lynch me, I'm baker!",
+  "Bob was shot by a vigilante. Bob was a member of the Mafia. - No game, ever",
+  "Oh, that's what the huge text box label 'Report Details' is for?",
+  "Stupidity is still not reportable.",
+  "Oh no, the game's getting DDOSed. What, I'm intentionally delaying the game? naaaah"
+]
+
+def create_embed(options)
+  options[:footer] ||= Discordrb::Webhooks::EmbedFooter.new(text: FOOTERS.sample)
+  Discordrb::Webhooks::Embed.new(options)
+end
+
 def api_call(options)
   agent = Mechanize.new
   page = agent.get('http://www.blankmediagames.com/phpbb/')
