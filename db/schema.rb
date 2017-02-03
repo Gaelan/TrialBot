@@ -10,7 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170119021116) do
+ActiveRecord::Schema.define(version: 20170202193222) do
+
+  create_table "channel_configs", force: :cascade do |t|
+    t.string  "channel_id"
+    t.boolean "short_reports", default: false
+    t.boolean "tr_update",     default: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.boolean "verified"

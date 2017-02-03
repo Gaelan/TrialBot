@@ -91,9 +91,16 @@ Bot.command :reports do |message, mode = nil|
   end
 end
 
-Bot.message(contains: /\A\d+\z/) do |message|
-  message.channel.start_typing
-  id = message.content.to_i
-
+Bot.command :report do |message, id_string|
+  id = id_string.to_i
   message.channel.send_message '', false, Report.new(id).embed
+end
+
+Bot.message(contains: /\A\d+\z/) do |message|
+  if message.channel.config.short_reports?
+    message.channel.start_typing
+    id = message.content.to_i
+
+    message.channel.send_message '', false, Report.new(id).embed
+  end
 end
