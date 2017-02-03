@@ -1,6 +1,5 @@
 require_relative 'accounts'
 require_relative 'config'
-require 'pry'
 
 def leaderboards
 	doc = Nokogiri::HTML(open('http://www.blankmediagames.com/Trial/fetch.php?from=leaderboards.php'))
