@@ -68,23 +68,24 @@ class Report
   end
 end
 
-Bot.command :reports do |message, mode = nil|
-  if mode == 'public'
-    pm_or_send = proc { |*x| message.respond *x }
+Bot.command :reports do |message, *opts|
+  channel = if opts.include? 'public'
+    message.channel
   else
-    pm_or_send = proc { |*x| message.author.pm *x }
+    message.author.pm
   end
   authenticate(message) do |user|
-    reports = api_call action: 'getreports', user: user.tos_name
-    message.respond ':arrow_right: Report information sent via PM.' unless mode == 'public'
+    action = (opts.include? 'all') ? 'getallreports' : 'getreports'
+    reports = api_call action: action, user: user.tos_name
+    message.respond ':arrow_right: Report information sent via PM.' unless opts.include? 'public'
     if reports['ErrorMessage'] && reports['ErrorMessage'] =~ /no guilty reports/
-      pm_or_send[":star2: #{reports['ErrorMessage']}"]
+      channel.send_message ":star2: #{reports['ErrorMessage']}"
     elsif reports['ErrorMessage'] != ''
-      pm_or_send[":x: #{reports['ErrorMessage']}"]
+      channel.send_message ":x: #{reports['ErrorMessage']}"
     else
-      pm_or_send[":frowning: You have #{reports['ReportID'].length} guilty reports:"]
+      channel.send_message ":frowning: You have #{reports['ReportID'].length} guilty reports:"
       reports['ReportID'].each do |id|
-        pm_or_send[Report.new(id).description]
+        channel.send_embed '', Report.new(id).embed
       end
     end
     return

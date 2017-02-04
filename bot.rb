@@ -21,7 +21,7 @@ FOOTERS = [
   "Beep boop.",
   "Don't lynch me, I'm baker!",
   "Bob was shot by a vigilante. Bob was a member of the Mafia. - No game, ever",
-  "Oh, that's what the huge text box label 'Report Details' is for?",
+  "Oh, that's what the huge text box labeled 'Report Details' is for?",
   "Stupidity is still not reportable.",
   "Oh no, the game's getting DDOSed. What, I'm intentionally delaying the game? naaaah"
 ]
