@@ -19,3 +19,4 @@ group :production do
 	gem 'pg'
 end
 gem 'mechanize'
+gem 'paper_trail'

@@ -23,7 +23,11 @@ FOOTERS = [
   "Bob was shot by a vigilante. Bob was a member of the Mafia. - No game, ever",
   "Oh, that's what the huge text box labeled 'Report Details' is for?",
   "Stupidity is still not reportable.",
-  "Oh no, the game's getting DDOSed. What, I'm intentionally delaying the game? naaaah"
+  "Oh no, the game's getting DDOSed. What, I'm intentionally delaying the game? naaaah",
+  "More like Town of Failum",
+  "I am blackmailed.",
+  "I a mblackmailed.",
+  "Have an idea for the grey text? PM @Gaelan#0424"
 ]
 
 def create_embed(options)
