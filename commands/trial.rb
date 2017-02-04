@@ -78,12 +78,12 @@ Bot.command :reports do |message, *opts|
     action = (opts.include? 'all') ? 'getallreports' : 'getreports'
     reports = api_call action: action, user: user.tos_name
     message.respond ':arrow_right: Report information sent via PM.' unless opts.include? 'public'
-    if reports['ErrorMessage'] && reports['ErrorMessage'] =~ /no guilty reports/
+    if reports['ErrorMessage'] && reports['ErrorMessage'] =~ /no( guilty)? reports/
       channel.send_message ":star2: #{reports['ErrorMessage']}"
     elsif reports['ErrorMessage'] != ''
       channel.send_message ":x: #{reports['ErrorMessage']}"
     else
-      channel.send_message ":frowning: You have #{reports['ReportID'].length} guilty reports:"
+      channel.send_message ":frowning: You have #{reports['ReportID'].length} reports:"
       reports['ReportID'].each do |id|
         channel.send_embed '', Report.new(id).embed
       end
