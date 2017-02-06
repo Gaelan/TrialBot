@@ -27,6 +27,12 @@ class Report
     "http://www.blankmediagames.com/Trial/viewReport.php?id=#{id}"
   end
 
+  def exists?
+    content = open(url).read
+    strings = ['Could not find any reports with that ID.', 'No report file found.']
+    return !(strings.include? content)
+  end
+
   def doc
     @doc ||= Nokogiri::HTML(open(url))
   end
@@ -66,6 +72,22 @@ class Report
       }[status]
     )
   end
+
+  def self.latest(last=nil, step=100000)
+    @last ||= 0
+    last ||= @last
+    puts "checking #{last + step}"
+    if Report.new(last + step).exists?
+      latest(last + step, step)
+    else
+      if step == 1
+        return Report.new(last)
+      else
+        @last = last
+        return latest(last, step / 10)
+      end
+    end
+  end
 end
 
 Bot.command :reports do |message, *opts|
@@ -104,4 +126,9 @@ Bot.message(contains: /\A\d+\z/) do |message|
 
     message.channel.send_message '', false, Report.new(id).embed
   end
+end
+
+Bot.command :latest do |message|
+  message.channel.start_typing
+  message.channel.send_embed '', Report.latest.embed
 end
