@@ -51,7 +51,6 @@ Bot.command :top10 do |event|
 	strings = response['userlist'].map.each_with_index do |name, idx|
 		"#{idx + 1}. **#{name}**, with **#{response['elolist'][idx]}** elo"
 	end
-	event.channel.send_message '', false, create_
-	embed(title: 'Top 10 Elo', description: strings.join("\n\n"))
+	event.channel.send_message '', false, create_embed(title: 'Top 10 Elo', description: strings.join("\n\n"))
 	nil
 end
