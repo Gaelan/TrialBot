@@ -64,3 +64,19 @@ Bot.command :verify do |message, key|
     message.respond ":x: Invalid key."
   end
 end
+
+Bot.command :getign do |message, player|
+  unless player =~ /<@(\d+)>/
+    message.respond ":x: Syntax: !getign @PlayerName#1234"
+    return
+  end
+
+  account = User.find_by_discord_id($1)
+
+  unless account
+    message.respond ":x: <@#{player}> isn't linked to Discord."
+    return
+  end
+
+  message.respond "#{player} is **#{account.tos_name}** on ToS."
+end
