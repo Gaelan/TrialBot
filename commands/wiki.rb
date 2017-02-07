@@ -51,3 +51,9 @@ Bot.command :wrevert do |event, name, version|
 	v.reify.save
 	event << ":back: Reverted **#{name}** to version #{version}!"
 end
+
+Bot.command :wdelete, required_permissions: [:manage_messages] do |event, name|
+	entry = WikiEntry.find_by_name(name)
+	entry.destroy
+	event << ":bomb: Poof! What #{name} entry?"
+end
