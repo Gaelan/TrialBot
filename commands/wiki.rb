@@ -7,7 +7,7 @@ end
 
 Bot.command :wiki do |event, name = nil|
 	if(!name)
-		list = WikiEntry.where(server_id: event.channel.server.id).pluck(:name).join(', ')
+		list = WikiEntry.where(server_id: event.channel.server.id).order(:name).pluck(:name).join(', ')
 		event.respond ":file_cabinet: Available wiki entries: #{list}"
 	else
 		event.respond WikiEntry.find_by(server_id: event.channel.server.id, name: name).text
