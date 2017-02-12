@@ -5,13 +5,39 @@ class WikiEntry < ActiveRecord::Base
 	has_paper_trail
 end
 
+LINK_REGEX = /
+	([^-]+)  # anything but a dash
+	->
+	([^ ]+)  # anything but a space
+/x
+
+def print_entry(name, event, header = false)
+	links = {}
+	text = WikiEntry.find_by(server_id: event.channel.server.id, name: name).text
+	formatted = text.gsub(LINK_REGEX) do |match|
+		emoji = $1
+		links[emoji] = $2
+		emoji
+	end
+	if header
+		formatted = "Showing **#{name}** for #{event.user.mention}\n" + formatted
+	end
+	msg = event.respond formatted
+	$entry_messages[msg.id] = links
+	links.each do |emoji, _text|
+		msg.react emoji
+	end
+end
+
+$entry_messages = Hash.new({})
 Bot.command :wiki do |event, name = nil|
 	if(!name)
 		list = WikiEntry.where(server_id: event.channel.server.id).order(:name).pluck(:name).join(', ')
 		event.respond ":file_cabinet: Available wiki entries: #{list}"
 	else
-		event.respond WikiEntry.find_by(server_id: event.channel.server.id, name: name).text
+		print_entry(name, event)
 	end
+	nil
 end
 
 Bot.command :wedit do |event, name = nil|
@@ -19,7 +45,7 @@ Bot.command :wedit do |event, name = nil|
 	event.respond ":pencil: Your next message will be saved as **#{name}**."
 	if entry.id
 		event.respond "Here's the current text in case you want to copy it:"
-		event.respond entry.text
+		event.respond "```\n#{entry.text}\n```"
 	end
 	event.message.await(Random.rand.to_s) do |contents_event|
 		PaperTrail.whodunnit = contents_event.author.distinct
@@ -56,4 +82,11 @@ Bot.command :wdelete, required_permissions: [:manage_messages] do |event, name|
 	entry = WikiEntry.find_by_name(name)
 	entry.destroy
 	event << ":bomb: Poof! What #{name} entry?"
+end
+
+Bot.reaction_add do |event|
+	return if event.user.bot?
+	if $entry_messages[event.message.id][event.emoji.name]
+		print_entry($entry_messages[event.message.id][event.emoji.name], event, true)
+	end
 end

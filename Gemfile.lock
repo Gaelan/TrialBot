@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/meew0/discordrb.git
-  revision: 5a3a2105454596b5380de3c35deace0a615f5219
+  revision: a28317a1c3e39f4b328d1bbc7516b41083358444
   specs:
     discordrb (3.2.0.1)
       discordrb-webhooks (~> 3.2.0.1)
@@ -68,7 +68,7 @@ GEM
     mime-types-data (3.2016.0521)
     mini_portile2 (2.1.0)
     minitest (5.10.1)
-    net-http-digest_auth (1.4)
+    net-http-digest_auth (1.4.1)
     net-http-persistent (2.9.4)
     netrc (0.11.0)
     nokogiri (1.7.0.1)
