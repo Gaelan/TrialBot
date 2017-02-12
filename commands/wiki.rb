@@ -35,7 +35,12 @@ Bot.command :wiki do |event, name = nil|
 		list = WikiEntry.where(server_id: event.channel.server.id).order(:name).pluck(:name).join(', ')
 		event.respond ":file_cabinet: Available wiki entries: #{list}"
 	else
-		print_entry(name, event)
+		begin
+			print_entry(name, event)
+		rescue => e
+			require 'yaml'
+			puts e.to_yaml
+		end
 	end
 	nil
 end
@@ -85,12 +90,7 @@ Bot.command :wdelete, required_permissions: [:manage_messages] do |event, name|
 end
 
 Bot.reaction_add do |event|
-	begin
-		if !event.user.current_bot? && $entry_messages[event.message.id][event.emoji.name]
-			print_entry($entry_messages[event.message.id][event.emoji.name], event, true)
-		end
-	rescue => e
-		require 'yaml'
-		puts e.to_yaml
+	if !event.user.current_bot? && $entry_messages[event.message.id][event.emoji.name]
+		print_entry($entry_messages[event.message.id][event.emoji.name], event, true)
 	end
 end
