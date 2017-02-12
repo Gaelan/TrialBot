@@ -6,7 +6,8 @@ class WikiEntry < ActiveRecord::Base
 end
 
 LINK_REGEX = /
-	([^!-~]+)    # anything but a printable ASCII
+	\$
+	([^-]+)      # anything but a dash
 	->
 	([^ ]+)      # anything but a space
 /x
