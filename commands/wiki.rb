@@ -88,7 +88,4 @@ Bot.reaction_add do |event|
 	if !event.user.current_bot? && $entry_messages[event.message.id][event.emoji.name]
 		print_entry($entry_messages[event.message.id][event.emoji.name], event, true)
 	end
-rescue => e
-	require 'yaml'
-	p e.to_yaml
 end
