@@ -6,9 +6,9 @@ class WikiEntry < ActiveRecord::Base
 end
 
 LINK_REGEX = /
-	([^-]+)  # anything but a dash
+	([^!-~]+)    # anything but a printable ASCII
 	->
-	([^ ]+)  # anything but a space
+	([^ ]+)      # anything but a space
 /x
 
 def print_entry(name, event, header = false)
@@ -35,12 +35,7 @@ Bot.command :wiki do |event, name = nil|
 		list = WikiEntry.where(server_id: event.channel.server.id).order(:name).pluck(:name).join(', ')
 		event.respond ":file_cabinet: Available wiki entries: #{list}"
 	else
-		begin
-			print_entry(name, event)
-		rescue => e
-			require 'yaml'
-			puts e.to_yaml
-		end
+		print_entry(name, event)
 	end
 	nil
 end
