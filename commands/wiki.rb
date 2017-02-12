@@ -7,9 +7,9 @@ end
 
 LINK_REGEX = /
 	\$
-	([^-]+)      # anything but a dash
+	([^-]+)             # anything but a dash
 	->
-	([^ ]+)      # anything but a space
+	([a-zA-Z0-9]+)      # entry name
 /x
 
 def print_entry(name, event, header = false)
