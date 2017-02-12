@@ -85,8 +85,7 @@ Bot.command :wdelete, required_permissions: [:manage_messages] do |event, name|
 end
 
 Bot.reaction_add do |event|
-	return if event.user.bot?
-	if $entry_messages[event.message.id][event.emoji.name]
+	if !event.user.current_bot? && $entry_messages[event.message.id][event.emoji.name]
 		print_entry($entry_messages[event.message.id][event.emoji.name], event, true)
 	end
 end
