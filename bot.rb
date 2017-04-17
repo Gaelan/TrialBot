@@ -29,7 +29,8 @@ FOOTERS = [
   "More like Town of Failum",
   "I am blackmailed.",
   "I a mblackmailed.",
-  "Have an idea for the grey text? PM @Gaelan#0424"
+  "Have an idea for the grey text? PM @Gaelan#0424",
+  "You can't lose elo if you don't play." # Credit to Kronemeyer#9070
 ]
 
 def create_embed(options)
