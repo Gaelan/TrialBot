@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
   validates :tos_name, presence: true, uniqueness: true
 
   def try_verify(key)
-    correct_key = Digest::SHA1.hexdigest ENV['TOS_BOT_AUTH_SALT'] + tos_name
+    correct_key = Digest::SHA1.hexdigest ENV['TOS_BOT_AUTH_SALT'] + tos_name.downcase
     if key == correct_key
       update(verified: true)
       return true

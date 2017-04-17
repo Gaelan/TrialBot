@@ -1,3 +1,5 @@
+require 'bundler'
+Bundler.setup
 require 'nokogiri'
 require 'open-uri'
 require 'discordrb'
