@@ -2,13 +2,14 @@ require_relative 'accounts'
 require_relative 'config'
 
 def leaderboards
-	doc = Nokogiri::HTML(open('http://www.blankmediagames.com/Trial/fetch.php?from=leaderboards.php'))
+	doc = Nokogiri::HTML(open('http://www.blankmediagames.com/Trial/topVoters.php'))
 	entries = doc.at_css('body').children.map &:text
 	pairs = entries.map do |string|
 		string.gsub! /\d+\. /, ''
 		string.split ': '
 	end
 	pairs.select! { |pair| pair.length == 2}
+	puts doc.to_s if pairs.empty?
 	Hash[pairs]
 end
 
