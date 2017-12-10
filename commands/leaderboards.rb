@@ -3,7 +3,7 @@ require_relative 'config'
 
 def leaderboards
 	doc = Nokogiri::HTML(open('http://www.blankmediagames.com/Trial/topVoters.php'))
-	entries = doc.at_css('body').children.map &:text
+	entries = (doc.at_css('body p') || doc.at_css('body')).children.map &:text
 	pairs = entries.map do |string|
 		string.gsub! /\d+\. /, ''
 		string.split ': '
