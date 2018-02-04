@@ -91,15 +91,11 @@ class Report
 end
 
 Bot.command :reports do |message, *opts|
-  channel = if opts.include? 'public'
-    message.channel
-  else
-    message.author.pm
-  end
+  channel = message.author.pm
   authenticate(message) do |user|
     action = (opts.include? 'all') ? 'getallreports' : 'getreports'
     reports = api_call action: action, user: user.tos_name
-    message.respond ':arrow_right: Report information sent via PM.' unless opts.include? 'public'
+    message.respond ':arrow_right: Report information sent via PM.'
     if reports['ErrorMessage'] && reports['ErrorMessage'] =~ /no( guilty)? reports/
       channel.send_message ":star2: #{reports['ErrorMessage']}"
     elsif reports['ErrorMessage'] != ''

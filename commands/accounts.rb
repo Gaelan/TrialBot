@@ -65,18 +65,15 @@ Bot.command :verify do |message, key|
   end
 end
 
-Bot.command :getign do |message, player|
-  unless player =~ /<@(\d+)>/
-    message.respond ":x: Syntax: !getign @PlayerName#1234"
-    return
-  end
+Bot.command :getign do |event, player|
+  discord_user = event.message.mentions[0]
 
-  account = User.find_by_discord_id($1)
+  account = User.find_by_discord_id(discord_user.id)
 
   unless account
-    message.respond ":x: <@#{player}> isn't linked to Discord."
+    event.respond ":x: <@#{player}> isn't linked to Discord."
     return
   end
 
-  message.respond "#{player} is **#{account.tos_name}** on ToS."
+  event.respond "#{player} is **#{account.tos_name}** on ToS."
 end
