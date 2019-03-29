@@ -1,11 +1,11 @@
 # A sample Gemfile
 source "https://rubygems.org"
 
-ruby '2.5.0'
+ruby '2.6.1'
 
 # gem "rails"
 gem 'nokogiri'
-gem 'discordrb', github: 'meew0/discordrb'
+gem 'discordrb', '~> 3.3.0'
 gem 'standalone_migrations'
 gem 'rake'
 gem 'activesupport'
