@@ -389,10 +389,9 @@ Bot.command :host do |event|
 end
 
 Bot.reaction_add do |event|
-  p 'here'
-  p event.message
-  p $tos_connection.message
-  if event.message == $tos_connection.message
-    $tos_connection.invite(User.find_by_discord_id(event.user.id).tos_name)
+  if $tos_connection && (event.message == $tos_connection.message)
+    if User.find_by_discord_id(event.user.id)
+      $tos_connection.invite(User.find_by_discord_id(event.user.id).tos_name)
+    end
   end
 end
