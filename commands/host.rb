@@ -30,7 +30,7 @@ class ToSConnection
     27 => :FriendMessage,
     28 => :user_information,
     29 => :create_party_lobby,
-    30 => :PartyInviteFailed,
+    30 => :party_invite_failed,
     31 => :PartyInviteNotification,
     32 => :AcceptedPartyInvite,
     33 => :pending_party_invite_status,
@@ -247,7 +247,7 @@ class ToSConnection
           rescue Exception => e
             # Disconnect if anything goes wrong—this makes sure the bot will never end up in a game
             p e
-            disconnect
+            disconnect('No longer hosting: An error occured.')
           end
         end
         puts 'Disconnect'
@@ -262,7 +262,7 @@ class ToSConnection
     Thread.new do
       # Don't get stuck hosting a game that never starts.
       sleep 60 * 5
-      disconnect
+      disconnect('Hosting timed out.')
     end
   end
 
@@ -272,16 +272,20 @@ class ToSConnection
 
   def to_embed
     embed = Discordrb::Webhooks::Embed.new
-    embed.title = 'Hosting game!'
-    embed.footer =
-      Discordrb::Webhooks::EmbedFooter.new(
-        text:
-          'To join, log into Town of Salem then react to this message. To start the game before 15 people have joined, type "!start" in party chat.'
-      )
+    embed.title = @disconnect_reason || 'Hosting game!'
+    unless @disconnect_reason
+      embed.footer =
+        Discordrb::Webhooks::EmbedFooter.new(
+          text:
+            'To join, log into Town of Salem then react to this message. To start the game before 15 people have joined, type "!start" in party chat.'
+        )
+    end
     @players.keys.each do |player|
       embed.add_field(
         name: player,
-        value: "<@#{User.find_by_tos_name(player).discord_id}>",
+        value:
+          "<@#{User.find_by_tos_name(player) &&
+            User.find_by_tos_name(player).discord_id}>",
         inline: true
       )
     end
@@ -308,7 +312,7 @@ class ToSConnection
       @players.values.count do |status|
         %i[pending accepted loading].include? status
       end
-    disconnect if count >= 15
+    disconnect('Game started.') if count >= 15
 
     message.edit('', to_embed)
   end
@@ -323,11 +327,19 @@ class ToSConnection
 
   def party_chat(data)
     name, message = data.split('*')
-    disconnect if message == '!start'
+    disconnect('Game started.') if message == '!start'
   end
 
   def party_member_left(data)
     @players[data] = :left
+  end
+
+  def party_invite_failed(data)
+    name, status = data.split('*')
+    @players[data] = :failed
+    Bot.user(User.find_by_tos_name(name).discord_id).pm(
+      ":x: I couldn't invite you to the game. Do you have Town of Salem open and logged in?"
+    )
   end
 
   def invite_powers_given_to_player(data); end
@@ -365,10 +377,14 @@ class ToSConnection
     @socket << msg
   end
 
-  def disconnect
+  def disconnect(reason)
+    @disconnect_reason = reason
+    message.edit('', to_embed)
     $tos_connection = nil
-    @socket.close
-    @thread.kill
+    Thread.new do
+      @thread.kill
+      @socket.close
+    end
   end
 end
 
@@ -392,6 +408,10 @@ Bot.reaction_add do |event|
   if $tos_connection && (event.message == $tos_connection.message)
     if User.find_by_discord_id(event.user.id)
       $tos_connection.invite(User.find_by_discord_id(event.user.id).tos_name)
+    else
+      event.user.pm(
+        ":x: Sorry, I don't know your ToS username. Please use \"!ign [your username]\", follow the instructions, and then attempt to join the game again."
+      )
     end
   end
 end
