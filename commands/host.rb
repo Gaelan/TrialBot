@@ -248,9 +248,9 @@ class ToSConnection
             # Disconnect if anything goes wrong—this makes sure the bot will never end up in a game
             p e
             disconnect
-            raise e
           end
         end
+        puts 'Disconnect'
       end
 
     sleep 1
@@ -351,6 +351,7 @@ class ToSConnection
   def ranked_info_update(data); end
 
   def send_message(type, *pieces)
+    p [type, pieces]
     msg = OUTGOING_MESSAGE_IDS[type].chr
     pieces.each do |p|
       case p
